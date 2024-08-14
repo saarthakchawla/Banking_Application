@@ -1,0 +1,8 @@
+{
+  "ownerName" : "Aniket",
+  "balance" : 200000
+}
+
+Custom exception for not found in get request. catch
+
+name, add ..
