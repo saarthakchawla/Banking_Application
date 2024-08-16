@@ -1,9 +1,8 @@
 package com.bank.controller;
 
 import com.bank.model.Account;
-import com.bank.repository.AccountRepository;
+import com.bank.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,17 +12,16 @@ import java.util.List;
 public class AccountController {
 
     @Autowired
-    private AccountRepository accountRepository;
+    private AccountService accountService;
 
     @GetMapping
     public List<Account> getAllAccounts() {
-        return accountRepository.findAll();
+        return accountService.getAllAccounts();
     }
 
     @GetMapping("/{id}")
     public Account getAccountById(@PathVariable Long id) {
-        return accountRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Account not found with ID: " + id));
+        return accountService.getAccountById(id);
     }
 
     @PostMapping
@@ -38,26 +36,23 @@ public class AccountController {
         }
 
         Account account = new Account(ownerName, age, gender, city, initialAmount);
-        return accountRepository.save(account);
+        return accountService.createAccount(account);
     }
 
     @PutMapping("/{id}")
-    public Account updateAccount(@PathVariable Long id, @RequestBody Account accountDetails) {
-        Account account = accountRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Account not found with ID: " + id));
-        account.setOwnerName(accountDetails.getOwnerName());
-        account.setAge(accountDetails.getAge());
-        account.setGender(accountDetails.getGender());
-        account.setCity(accountDetails.getCity());
-        account.setBalance(accountDetails.getBalance());
-        return accountRepository.save(account);
+    public Account updateAccount(@PathVariable Long id,
+                                 @RequestBody Account accountDetails) {
+        return accountService.updateAccount(id, accountDetails);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteAccount(@PathVariable Long id) {
-        Account account = accountRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Account not found with ID: " + id));
-        accountRepository.delete(account);
-        return ResponseEntity.ok("Account deleted successfully.");
+    public void deleteAccount(@PathVariable Long id) {
+        accountService.deleteAccount(id);
+    }
+
+    @PutMapping("/{id}/update-details")
+    public Account updateAccountDetails(@PathVariable Long id,
+                                        @RequestBody Account accountDetails) {
+        return accountService.updateAccount(id, accountDetails);
     }
 }
