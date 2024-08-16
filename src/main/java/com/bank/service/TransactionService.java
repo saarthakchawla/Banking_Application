@@ -33,13 +33,14 @@ public class TransactionService {
             fromAccount.setBalance(fromAccount.getBalance() - amount);
             toAccount.setBalance(toAccount.getBalance() + amount);
 
-            // Create transaction records
-            Transaction debitTransaction = new Transaction("debit", amount, fromAccountId);
-            Transaction creditTransaction = new Transaction("credit", amount, toAccountId);
+            // Create a single transaction record
+            Transaction transaction = new Transaction();
+            transaction.setFromAccountId(fromAccountId);
+            transaction.setToAccountId(toAccountId);
+            transaction.setAmount(amount);
 
-            // Save transactions
-            transactionRepository.save(debitTransaction);
-            transactionRepository.save(creditTransaction);
+            // Save the transaction
+            transactionRepository.save(transaction);
 
             // Save updated account balances
             accountRepository.save(fromAccount);
@@ -51,7 +52,7 @@ public class TransactionService {
 
     public List<Transaction> getTransactionsByAccount(Long accountId) {
         try {
-            return transactionRepository.findByAccountIdOrderByTimestampDesc(accountId);
+            return transactionRepository.findByFromAccountIdOrToAccountIdOrderByTimestampDesc(accountId, accountId);
         } catch (Exception e) {
             throw new RuntimeException("Error: " + e.getMessage());
         }

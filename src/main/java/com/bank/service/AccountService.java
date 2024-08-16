@@ -14,53 +14,35 @@ public class AccountService {
     @Autowired
     private AccountRepository accountRepository;
 
-    public List<Account> getAllAccounts() {
-        try {
-            return accountRepository.findAll();
-        } catch (Exception e) {
-            throw new RuntimeException("Error: " + e.getMessage());
+    public Account createAccount(Account account) {
+        return accountRepository.save(account);
+    }
+
+    public Account updateAccount(Account account) {
+        Optional<Account> existingAccountOpt = accountRepository.findById(account.getId());
+        if (existingAccountOpt.isPresent()) {
+            Account existingAccount = existingAccountOpt.get();
+            existingAccount.setName(account.getName());
+            existingAccount.setAge(account.getAge());
+            existingAccount.setGender(account.getGender());
+            existingAccount.setCity(account.getCity());
+            existingAccount.setBalance(account.getBalance());
+            return accountRepository.save(existingAccount);
+        } else {
+            throw new RuntimeException("Account not found with ID: " + account.getId());
         }
     }
 
     public Account getAccountById(Long id) {
-        try {
-            return accountRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Account not found with ID: " + id));
-        } catch (Exception e) {
-            throw new RuntimeException("Error: " + e.getMessage());
-        }
-    }
-
-    public Account createAccount(Account account) {
-        try {
-            return accountRepository.save(account);
-        } catch (Exception e) {
-            throw new RuntimeException("Error: " + e.getMessage());
-        }
-    }
-
-    public Account updateAccount(Long id, Account accountDetails) {
-        try {
-            Account account = accountRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Account not found with ID: " + id));
-            account.setOwnerName(accountDetails.getOwnerName());
-            account.setAge(accountDetails.getAge());
-            account.setGender(accountDetails.getGender());
-            account.setCity(accountDetails.getCity());
-            account.setBalance(accountDetails.getBalance());
-            return accountRepository.save(account);
-        } catch (Exception e) {
-            throw new RuntimeException("Error: " + e.getMessage());
-        }
+        return accountRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Account not found with ID: " + id));
     }
 
     public void deleteAccount(Long id) {
-        try {
-            Account account = accountRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Account not found with ID: " + id));
-            accountRepository.delete(account);
-        } catch (Exception e) {
-            throw new RuntimeException("Error: " + e.getMessage());
-        }
+        accountRepository.deleteById(id);
+    }
+
+    public List<Account> getAllAccounts() {
+        return accountRepository.findAll();
     }
 }

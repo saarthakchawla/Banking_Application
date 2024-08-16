@@ -15,11 +15,11 @@ public class TransactionController {
     private TransactionService transactionService;
 
     @PostMapping("/transfer")
-    public String transfer(@RequestParam Long fromAccountId,
-                           @RequestParam Long toAccountId,
-                           @RequestParam double amount) {
-        transactionService.transfer(fromAccountId, toAccountId, amount);
-        return "Transfer successful from Account " + fromAccountId + " to Account " + toAccountId;
+    public String transfer(@RequestBody Transaction transactionRequest) {
+        transactionService.transfer(transactionRequest.getFromAccountId(),
+                transactionRequest.getToAccountId(),
+                transactionRequest.getAmount());
+        return "Transfer successful from Account " + transactionRequest.getFromAccountId() + " to Account " + transactionRequest.getToAccountId();
     }
 
     @GetMapping("/history/{accountId}")

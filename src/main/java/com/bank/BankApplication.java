@@ -10,4 +10,3 @@ public class BankApplication extends SpringBootServletInitializer {
 		SpringApplication.run(BankApplication.class, args);
 	}
 }
-
